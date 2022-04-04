@@ -20,15 +20,13 @@ public class CrawlerTask implements Runnable{
 
     @Override
     public void run() {
-        while (urlPool.size() != 0) {
-            URLDepthPair currentPair = urlPool.pop();
+        URLDepthPair currentPair = urlPool.pop();
 
-            LinkedList<URLDepthPair> list =
-                    search(currentPair.getCurrentURL(), currentPair.getCurrentDepth());
-            if (!list.isEmpty()) {
-                for (URLDepthPair pair : list) {
-                    urlPool.push(pair);
-                }
+        LinkedList<URLDepthPair> list =
+                search(currentPair.getCurrentURL(), currentPair.getCurrentDepth());
+        if (!list.isEmpty()) {
+            for (URLDepthPair pair : list) {
+                urlPool.push(pair);
             }
         }
     }
@@ -40,9 +38,17 @@ public class CrawlerTask implements Runnable{
             /** Setting up a connection. **/
             URL url = new URL(currentURL);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestProperty("User Agent",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36");
+            connection.setRequestProperty("Accept-Charset", "UTF-8");
+
+            connection.setConnectTimeout(1000);
+
             connection.connect();
 
-            connection.setConnectTimeout(3000);
+            if (connection.getResponseCode() != 200){
+                return list;
+            }
 
             /** Reader to save the page source info. **/
             BufferedReader reader = new BufferedReader(

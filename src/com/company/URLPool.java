@@ -1,5 +1,6 @@
 package com.company;
 
+import java.net.URL;
 import java.util.LinkedList;
 
 public class URLPool {
@@ -14,7 +15,22 @@ public class URLPool {
         processedPool = new LinkedList<>();
     }
 
-    public synchronized int size(){
+    private static boolean containURL(URLDepthPair pair){
+        boolean in = false;
+        for (URLDepthPair p: unprocessedPool){
+            if (p.getCurrentURL().equals(pair.getCurrentURL())){
+                in = true;
+            }
+        }
+        for (URLDepthPair p: processedPool){
+            if (p.getCurrentURL().equals(pair.getCurrentURL())){
+                in = true;
+            }
+        }
+        return in;
+    }
+
+    public static synchronized int size(){
         return unprocessedPool.size();
     }
 
@@ -29,17 +45,21 @@ public class URLPool {
 
         URLDepthPair pair = unprocessedPool.getFirst();
         processedPool.add(pair);
+        System.out.println(pair + "\n" + unprocessedPool.size() + "\n");
         unprocessedPool.remove(pair);
         return pair;
     }
 
     public synchronized void push(URLDepthPair newPair){
-        if (newPair.getCurrentDepth() < maxDepth) {
-            unprocessedPool.add(newPair);
-            notify();
-            return;
+        if (!containURL(newPair)) {
+            if (newPair.getCurrentDepth() < maxDepth) {
+                unprocessedPool.add(newPair);
+                notify();
+                return;
+            }
+            processedPool.add(newPair);
+            System.out.println(newPair + "\n" + unprocessedPool.size() + "\n");
         }
-        processedPool.add(newPair);
     }
 
     public void showResult(){

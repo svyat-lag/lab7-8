@@ -2,7 +2,7 @@ package com.company;
 
 public class Crawlers {
 
-    private static int numThreads = 1;
+    private static int numThreads = 10;
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -12,15 +12,15 @@ public class Crawlers {
 //        System.out.println(url);
 //        System.out.println(depthStr);
 
-        URLPool pool = new URLPool(4);
+        URLPool pool = new URLPool(5);
         pool.push(new URLDepthPair("https://mtuci.ru/", 0));
 
-        for (int i = 1; i <= numThreads; i++){
+        while (URLPool.size() != 0) {
             Thread thread = new Thread(new CrawlerTask(pool));
             thread.start();
             thread.join();
         }
 
-        pool.showResult();
+//        pool.showResult();
     }
 }
