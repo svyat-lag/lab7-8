@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 public class CrawlerTask implements Runnable{
 
+    /** URL-pool that deals with all links. **/
     URLPool urlPool;
 
     public CrawlerTask(URLPool urlPool){
@@ -54,6 +55,9 @@ public class CrawlerTask implements Runnable{
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(
                             connection.getInputStream()));
+            // Объект класса InputStream мы передаем в объект класса InputStreamReader, чтобы прочитать его,
+            // переведя поток байтов в поток символов. Класс BufferedReader позволяет минимизировать количество
+            // операций ввода-вывода, считывая фрагменты символов и сохраняя их во внутреннем буфере.
 
             /** Pattern that helps find refs. **/
             Pattern urlPattern = Pattern.compile( "<a href=\\\"https://.+?\\\"" );
